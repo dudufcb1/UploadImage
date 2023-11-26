@@ -2,7 +2,7 @@ const path = require('path');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
-const uploadProductImage = async (req, res) => {
+const uploadProductImageLocal = async (req, res) => {
     console.log(req.files)
     if (!req.files) throw new CustomError.BadRequestError('No files were uploaded.');
 
@@ -22,6 +22,8 @@ const uploadProductImage = async (req, res) => {
     return res.status(StatusCodes.OK).json({ image: { src: `uploads/${productImage.name}` }, message: `Image uploaded successfully` });
 }
 
+
+
 module.exports = {
-    uploadProductImage,
+    //uploadProductImage,
 };
