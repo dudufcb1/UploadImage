@@ -22,7 +22,7 @@ const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 //json parser
 app.use(express.json());
-app.use(fileUpload());
+app.use(fileUpload({ useTempFiles: true}));
 app.use(express.static('./public'));
 
 
