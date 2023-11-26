@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lista de Productos</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-200">
+    <h1 class="text-center text-3xl my-8">Lista de Productos</h1>
+
+    <div
+      id="loader"
+      class="w-full h-full fixed top-0 left-0 bg-white opacity-75 z-50 flex justify-center items-center"
+    >
+      <div
+        class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"
+      ></div>
+    </div>
+
+    <div
+      id="product-list"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-8"
+    >
+      <!-- Los productos se insertarán aquí -->
+    </div>
+
+    <script>
+      axios
+        .get("http://localhost:3000/api/v1/products")
+        .then(function (response) {
+          var productList = document.getElementById("product-list");
+          var loader = document.getElementById("loader");
+          response.data.products.forEach(function (product) {
+            var productCard = document.createElement("div");
+            productCard.className = "bg-white rounded shadow p-4";
+            var imageUrl = product.image
+              ? `http://localhost:3000/${product.image}`
+              : "http://localhost:3000/uploads/default.jpg";
+            productCard.innerHTML = `
+                    <img class="w-full h-64 object-cover mb-4 rounded" src="${imageUrl}" alt="${product.name}">
+                    <h2 class="text-xl mb-2">${product.name}</h2>
+                    <p class="text-gray-500">${product.price}</p>
+                `;
+            productList.appendChild(productCard);
+          });
+          loader.style.display = "none";
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    </script>
+
+    <style>
+      .loader {
+        border-top-color: #3498db;
+        -webkit-animation: spinner 1.5s linear infinite;
+        animation: spinner 1.5s linear infinite;
+      }
+      @-webkit-keyframes spinner {
+        0% {
+          -webkit-transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @keyframes spinner {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </body>
+</html>

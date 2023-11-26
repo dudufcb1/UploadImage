@@ -1,48 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
- <meta charset="UTF-8">
- <meta http-equiv="X-UA-Compatible" content="IE=edge">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <!-- title -->
- <title>File Upload</title>
- <!-- normalize css -->
- <link rel="stylesheet" href="./normalize.css">
- <!-- styles css -->
- <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
- <form class="form file-form">
-  <h4>File Upload</h4>
-  <!-- single row -->
-  <div class="form-row">
-   <label for="name" class="form-label">Name</label>
-   <input type="text" id="name" class="form-input" value="computer">
-  </div>
-  <!-- end of single row -->
-  <!-- single row -->
-  <div class="form-row">
-   <label for="price" class="form-label">Price</label>
-   <input type="number" id="price" class="form-input" value="150.99">
-  </div>
-  <!-- end of single row -->
-  <!-- single row -->
-  <div class="form-row">
-   <label for="image" class="form-label">Image</label>
-   <input type="file" id="image" accept="image/*" >
-  </div>
-  <!-- end of single row -->
-  
-   <button type="submit" class="btn btn-block">add product</button>
-  </div>
-  </form>
-<section class="container">
-</section>
+<html>
+  <head>
+    <title>Lista de Productos</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+      .product-card {
+        border: 1px solid #333;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lista de Productos</h1>
 
+    <h2>Subir imagen</h2>
+    <form id="upload-form">
+      <input type="file" id="image-upload" />
+      <button type="submit">Subir</button>
+    </form>
 
+    <h2>Crear producto</h2>
+    <form id="product-form" disabled>
+      <label>
+        Nombre:
+        <input type="text" id="product-name" disabled />
+      </label>
+      <label>
+        Precio:
+        <input type="text" id="product-price" disabled />
+      </label>
+      <button type="submit" disabled>Crear</button>
+    </form>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <div id="product-list"></div>
 
-  <script src="./browser-app.js"></script>
-</body>
+    <script>
+      var uploadedImageSrc;
+
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          var imageInput = document.getElementById("image-upload");
+          var formData = new FormData();
+          formData.append("image", imageInput.files[0]);
+
+          axios
+            .post("http://localhost:3000/api/v1/products/upload", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then(function (response) {
+              console.log(response.data);
+              uploadedImageSrc = response.data.image.src;
+              document
+                .getElementById("product-form")
+                .removeAttribute("disabled");
+              document
+                .getElementById("product-name")
+                .removeAttribute("disabled");
+              document
+                .getElementById("product-price")
+                .removeAttribute("disabled");
+              document
+                .querySelector("#product-form button")
+                .removeAttribute("disabled");
+              alert("Imagen subida con éxito: " + uploadedImageSrc);
+            })
+            .catch(function (error) {
+              console.log(error);
+              alert("Error al subir la imagen");
+            });
+        });
+
+      document
+        .getElementById("product-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          var nameInput = document.getElementById("product-name");
+          var priceInput = document.getElementById("product-price");
+
+          axios
+            .post("http://localhost:3000/api/v1/products", {
+              name: nameInput.value,
+              price: priceInput.value,
+              image: uploadedImageSrc,
+            })
+            .then(function (response) {
+              console.log(response.data);
+              alert("Producto creado con éxito");
+            })
+            .catch(function (error) {
+              console.log(error);
+              alert("Error al crear el producto");
+            });
+        });
+
+      // Aquí va el código que ya tienes para obtener y mostrar la lista de productos.
+    </script>
+  </body>
 </html>
